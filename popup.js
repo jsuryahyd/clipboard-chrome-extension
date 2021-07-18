@@ -200,7 +200,8 @@ function appendCard({ text, noteId }, animation) {
         saveBtn.innerText = "Auto Saved";
         setTimeout(() => {
           saveBtn.innerText = "Save";
-        }, 600);
+          actionsDiv.classList.remove("edit-mode")
+        }, 700);
       });
     }, 1500);
 
