@@ -1,0 +1,45 @@
+{
+"update_url": "https://clients2.google.com/service/update2/crx",
+
+    "name": "Clip Board & Notes",
+    "version": "{{version}}",
+    "description": "Sticky notes in browser",
+    "key": "{{manifest_key}}",
+    "oauth2": {
+        "client_id": "{{clientId}}",
+        "scopes": [
+            "https://www.googleapis.com/auth/drive.appdata",
+            "https://www.googleapis.com/auth/drive.file"
+        ]
+    },
+    "manifest_version": 2,
+    "permissions": [
+        "storage",
+        "declarativeContent",
+        "activeTab",
+        "clipboardRead",
+        "clipboardWrite",
+        "webNavigation",
+        "identity"
+    ],
+    "background": {
+        "run_at": "document_start",
+        "scripts": [
+            "background.js",
+            "gapi.js"
+        ],
+        "persistent": true
+    },
+   
+    "web_accessible_resources": [
+        "content_scripts/appContent.htm"
+    ],
+    "content_security_policy": "script-src 'self' https://apis.google.com; object-src 'self'",
+    "browser_action": {
+        "default_popup": "popup.html"
+    },
+    "options_page": "options/options.html",
+    "icons": {
+        "128": "icons/note_69.png"
+    }
+}

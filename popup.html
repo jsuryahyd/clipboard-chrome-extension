@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style>
+      html {
+        padding: 0;
+        margin: 0;
+        --card-bg: #606060;
+        --theme-color: #606060;
+        --text-color: #ffffff;
+        --card-border-color: #ffffff;
+        box-sizing: border-box;
+        /* margin-top: 20px; */
+      }
+
+      /* html *{
+        scroll-behavior: smooth;
+      } */
+      body {
+        background-color: var(--theme-color, dimgray);
+        width: 350px;
+        height: 400px;
+        margin: 0;
+        padding: 0;
+        padding-bottom: 10px;
+        color: var(--text-color, "#fff");
+        background-image: url("./icons/linen-texture.jpg");
+      }
+      * {
+        color: var(--text-color, "#333333");
+      }
+
+      .app-title {
+        color: var(--theme-color, dimgray);
+      }
+      #main_section {
+        max-height: calc(100% - 50px);
+        overflow: auto;
+        padding: 50px 10px 10px;
+      }
+      #cards_container {
+      }
+
+      .content_card {
+        border-radius: 4px;
+        /* border: 1px solid; */
+        /* border-color: var(--card-bg, "#f3f3f3"); */
+        border-color: var(--card-border-color, "#ffffff");
+        background-color: var(--card-bg, "#f3f3f3");
+        min-height: 60px;
+        /* background-image: url("./icons/painting.webp"); */
+        /* max-height: 200px; */
+
+        margin-bottom: 10px;
+        transition: height 0.3s;
+      }
+      @keyframes glow {
+        0% {
+          box-shadow: none;
+        }
+        30% {
+          box-shadow: 0px 0px 15px white; /*#e8453c;*/
+        }
+        80% {
+          box-shadow: 0px 0px 15px white; /*#e8453c;*/
+        }
+        100% {
+          box-shadow: none;
+        }
+      }
+
+      .content_card * {
+        max-width: 100%;
+        white-space: break-word;
+      }
+      .content_card h4 {
+        margin-top: 0;
+      }
+
+      .content_card--dummy {
+        border-style: dashed;
+        border-color: var(--card-bg, "#ffffff");
+        background-color: transparent;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: var(--card-bg, "#ffffff");
+        cursor: pointer;
+        height: 100px;
+      }
+
+      .card__title,
+      .card__actions {
+        width: 70%;
+        display: inline-block;
+        vertical-align: top;
+        margin-bottom: 0;
+      }
+      .card__actions {
+        width: 30%;
+        display: inline-flex;
+        justify-content: space-evenly;
+      }
+
+      .card__actions img {
+        width: 15px !important;
+        height: 15px !important;
+      }
+
+      .note-content {
+        font-family: inherit;
+        display: block;
+        width: 100%;
+        padding: 4px;
+        min-height: 60px;
+        border: 1px solid transparent;
+        background: transparent;
+        resize: none; /* remove diagonal lines on right-bottom corner */
+      }
+
+      .note-content{
+        box-sizing: border-box;
+      }
+
+      .note-content:focus {
+        /* border: 1px solid rgba(0, 0, 0, 0.2); */
+        border-radius: 4px;
+        /* padding: 8px; */
+        
+        /* background-color:#e3e3e3 */
+      }
+
+      .note-content:focus {
+        outline: none;
+        /* border:1px solid #333 */
+      }
+
+      ::-webkit-scrollbar {
+        width: 0;
+      }
+
+      header {
+        height: 40px;
+        width: 100%;
+        position: fixed;
+        background: white;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.1);
+      }
+
+      header > h3 {
+        margin: 0;
+        margin-left: 10px;
+      }
+
+      /*helpers*/
+      .btn--no_style {
+        background: transparent;
+        border: 0;
+        display: inline-block;
+      }
+
+      .btn--no_style:active,
+      .btn--no_style:focus {
+        outline: none;
+      }
+
+      .card__action-btn {
+        transition: transform 0.2s;
+        cursor: pointer;
+      }
+
+      .card__header {
+        margin-bottom: 0;
+        padding: 8px;
+        border-bottom: 1px solid #cccccc;
+      }
+
+      .card__action-btn:hover {
+        transform: scale(1.3);
+      }
+      #save_card_btn {
+        cursor: pointer;
+        float: right;
+        text-align: right;
+      }
+      #save_card_btn img {
+        width: 18px;
+        height: 18px;
+      }
+      @keyframes fadeIn {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 100%;
+        }
+      }
+      @keyframes fadeOut {
+        100% {
+          opacity: 0;
+        }
+        0% {
+          opacity: 100%;
+        }
+      }
+
+      .card__action-btn {
+        display: initial;
+        animation: fadeIn 0.2s;
+      }
+      .card__action-btn.card__action--save {
+        display: none;
+        animation: fadeOut 0.2s;
+        font-size: 12px;
+        padding: 4px;
+        background: transparent;
+        color: var(--text-color);
+        border: 1px solid var(--text-color);
+        height: 20px;
+        line-height: 20px;
+        padding: 0 5px;
+        border-radius: 2px;
+        margin-left: auto;
+      }
+      .card__action-btn.card__action--save:hover {
+        transform: none;
+      }
+      .edit-mode .card__action-btn {
+        display: initial;
+        animation: fadeOut 0.2s;
+        display: none;
+      }
+      .edit-mode .card__action-btn.card__action--save {
+        display: initial;
+        animation: fadeIn 0.2s;
+      }
+
+      /*utilities*/
+      .clearfix {
+        overflow: auto;
+      }
+
+      .clearfix::after {
+        content: "";
+        clear: both;
+        display: table;
+      }
+      .d-none {
+        display: none;
+        transition: opacity 0.2s linear;
+      }
+
+      .m-0 {
+        margin: 0 !important;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h3 class="app-title">Clip Board And Notes</h3>
+      <button
+        class="btn--no_style"
+        id="add_notes_btn"
+        style="margin-left: auto;margin-right:10px;display: flex;align-items: center;cursor: pointer;"
+      >
+        <img
+          style="width:20px;height:20px"
+          src="data:image/svg+xml;base64,
+        PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGlkPSJDYXBhXzEiIHg9IjBweCIgeT0iMHB4IiB2aWV3Qm94PSIwIDAgNTIgNTIiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDUyIDUyOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIGNsYXNzPSIiPjxnPjxwYXRoIGQ9Ik0yNiwwQzExLjY2NCwwLDAsMTEuNjYzLDAsMjZzMTEuNjY0LDI2LDI2LDI2czI2LTExLjY2MywyNi0yNlM0MC4zMzYsMCwyNiwweiBNMzguNSwyOEgyOHYxMWMwLDEuMTA0LTAuODk2LDItMiwyICBzLTItMC44OTYtMi0yVjI4SDEzLjVjLTEuMTA0LDAtMi0wLjg5Ni0yLTJzMC44OTYtMiwyLTJIMjRWMTRjMC0xLjEwNCwwLjg5Ni0yLDItMnMyLDAuODk2LDIsMnYxMGgxMC41YzEuMTA0LDAsMiwwLjg5NiwyLDIgIFMzOS42MDQsMjgsMzguNSwyOHoiIGRhdGEtb3JpZ2luYWw9IiMwMDAwMDAiIGNsYXNzPSJhY3RpdmUtcGF0aCIgc3R5bGU9ImZpbGw6I0NDQ0NDQyIgZGF0YS1vbGRfY29sb3I9IiNjY2NjY2MiPjwvcGF0aD48L2c+IDwvc3ZnPg=="
+        />
+      </button>
+      <button
+        class="btn--no_style"
+        id="options_btn"
+        style="margin-right:10px;display: flex;align-items: center;cursor: pointer;"
+      >
+        <img
+          style="width:20px;height:20px"
+          src="data:image/svg+xml;base64,
+        PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGlkPSJDYXBhXzEiIHg9IjBweCIgeT0iMHB4IiB2aWV3Qm94PSIwIDAgMjY4Ljc2NSAyNjguNzY1IiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAyNjguNzY1IDI2OC43NjU7IiB4bWw6c3BhY2U9InByZXNlcnZlIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgY2xhc3M9IiI+PGc+PGcgaWQ9IlNldHRpbmdzIj4KCTxnPgoJCTxwYXRoIHN0eWxlPSJmaWxsOiNDQ0NDQ0MiIGQ9Ik0yNjcuOTIsMTE5LjQ2MWMtMC40MjUtMy43NzgtNC44My02LjYxNy04LjYzOS02LjYxNyAgICBjLTEyLjMxNSwwLTIzLjI0My03LjIzMS0yNy44MjYtMTguNDE0Yy00LjY4Mi0xMS40NTQtMS42NjMtMjQuODEyLDcuNTE1LTMzLjIzMWMyLjg4OS0yLjY0MSwzLjI0LTcuMDYyLDAuODE3LTEwLjEzMyAgICBjLTYuMzAzLTguMDA0LTEzLjQ2Ny0xNS4yMzQtMjEuMjg5LTIxLjVjLTMuMDYzLTIuNDU4LTcuNTU3LTIuMTE2LTEwLjIxMywwLjgyNWMtOC4wMSw4Ljg3MS0yMi4zOTgsMTIuMTY4LTMzLjUxNiw3LjUyOSAgICBjLTExLjU3LTQuODY3LTE4Ljg2Ni0xNi41OTEtMTguMTUyLTI5LjE3NmMwLjIzNS0zLjk1My0yLjY1NC03LjM5LTYuNTk1LTcuODQ5Yy0xMC4wMzgtMS4xNjEtMjAuMTY0LTEuMTk3LTMwLjIzMi0wLjA4ICAgIGMtMy44OTYsMC40My02Ljc4NSwzLjc4Ni02LjY1NCw3LjY4OWMwLjQzOCwxMi40NjEtNi45NDYsMjMuOTgtMTguNDAxLDI4LjY3MmMtMTAuOTg1LDQuNDg3LTI1LjI3MiwxLjIxOC0zMy4yNjYtNy41NzQgICAgYy0yLjY0Mi0yLjg5Ni03LjA2My0zLjI1Mi0xMC4xNDEtMC44NTNjLTguMDU0LDYuMzE5LTE1LjM3OSwxMy41NTUtMjEuNzQsMjEuNDkzYy0yLjQ4MSwzLjA4Ni0yLjExNiw3LjU1OSwwLjgwMiwxMC4yMTQgICAgYzkuMzUzLDguNDcsMTIuMzczLDIxLjk0NCw3LjUxNCwzMy41M2MtNC42MzksMTEuMDQ2LTE2LjEwOSwxOC4xNjUtMjkuMjQsMTguMTY1Yy00LjI2MS0wLjEzNy03LjI5NiwyLjcyMy03Ljc2Miw2LjU5NyAgICBjLTEuMTgyLDEwLjA5Ni0xLjE5NiwyMC4zODMtMC4wNTgsMzAuNTYxYzAuNDIyLDMuNzk0LDQuOTYxLDYuNjA4LDguODEyLDYuNjA4YzExLjcwMi0wLjI5OSwyMi45MzcsNi45NDYsMjcuNjUsMTguNDE1ICAgIGM0LjY5OCwxMS40NTQsMS42NzgsMjQuODA0LTcuNTE0LDMzLjIzYy0yLjg3NSwyLjY0MS0zLjI0LDcuMDU1LTAuODE3LDEwLjEyNmM2LjI0NCw3Ljk1MywxMy40MDksMTUuMTksMjEuMjU5LDIxLjUwOCAgICBjMy4wNzksMi40ODEsNy41NTksMi4xMzEsMTAuMjI4LTAuODFjOC4wNC04Ljg5MywyMi40MjctMTIuMTg0LDMzLjUwMS03LjUzNmMxMS41OTksNC44NTIsMTguODk1LDE2LjU3NSwxOC4xODEsMjkuMTY3ICAgIGMtMC4yMzMsMy45NTUsMi42Nyw3LjM5OCw2LjU5NSw3Ljg1YzUuMTM1LDAuNTk5LDEwLjMwMSwwLjg5OCwxNS40ODEsMC44OThjNC45MTcsMCw5LjgzNS0wLjI3LDE0Ljc1Mi0wLjgxNyAgICBjMy44OTctMC40Myw2Ljc4NC0zLjc4Niw2LjY1My03LjY5NmMtMC40NTEtMTIuNDU0LDYuOTQ2LTIzLjk3MywxOC4zODYtMjguNjU3YzExLjA1OS00LjUxNywyNS4yODYtMS4yMTEsMzMuMjgxLDcuNTcyICAgIGMyLjY1NywyLjg5LDcuMDQ3LDMuMjM5LDEwLjE0MiwwLjg0OGM4LjAzOS02LjMwNCwxNS4zNDktMTMuNTM0LDIxLjc0LTIxLjQ5NGMyLjQ4LTMuMDc5LDIuMTMtNy41NTktMC44MDMtMTAuMjEzICAgIGMtOS4zNTMtOC40Ny0xMi4zODgtMjEuOTQ2LTcuNTI5LTMzLjUyNGM0LjU2OC0xMC44OTksMTUuNjEyLTE4LjIxNywyNy40OTEtMTguMjE3bDEuNjYyLDAuMDQzICAgIGMzLjg1MywwLjMxMyw3LjM5OC0yLjY1NSw3Ljg2NS02LjU4OEMyNjkuMDQ0LDEzOS45MTcsMjY5LjA1OCwxMjkuNjM5LDI2Ny45MiwxMTkuNDYxeiBNMTM0LjU5NSwxNzkuNDkxICAgIGMtMjQuNzE4LDAtNDQuODI0LTIwLjEwNi00NC44MjQtNDQuODI0YzAtMjQuNzE3LDIwLjEwNi00NC44MjQsNDQuODI0LTQ0LjgyNGMyNC43MTcsMCw0NC44MjMsMjAuMTA3LDQ0LjgyMyw0NC44MjQgICAgQzE3OS40MTgsMTU5LjM4NSwxNTkuMzEyLDE3OS40OTEsMTM0LjU5NSwxNzkuNDkxeiIgZGF0YS1vcmlnaW5hbD0iIzAwMDAwMCIgY2xhc3M9ImFjdGl2ZS1wYXRoIiBkYXRhLW9sZF9jb2xvcj0iI2NjY2NjYyI+PC9wYXRoPgoJPC9nPgo8L2c+PC9nPiA8L3N2Zz4="
+        />
+      </button>
+    </header>
+    <section id="main_section">
+      <div id="cards_container"></div>
+      <div class="content_card content_card--dummy">
+        CTRL + V
+      </div>
+    </section>
+  </body>
+  <script src="options/invertColor.js"></script>
+  <script src="popup.js"></script>
+</html>

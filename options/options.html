@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style>
+      html {
+        --blue1: #2980b9;
+      }
+      .color-picker {
+        /* width: 60px;
+        background: none;
+        border: none;
+        margin-bottom: 15px;
+        height: 60px;
+        border-radius: 5px;
+        vertical-align: middle; */
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .bg-picker-label {
+        width: 200px;
+        height: 80px;
+        border: 1px solid #cccccc;
+        border-radius: 4px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+      }
+
+      .bg-picker-label input {
+      }
+
+      .header {
+        width: 100vw;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: var(--blue1);
+        height: 70px;
+        box-shadow: 0 0px 15px 1px #333333;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #options_container {
+        margin-top: 70px;
+        height: calc(100vh - 60px - 70px);
+      }
+
+      #download_notes,
+      [for="upload_notes"],
+      #backup,
+      #fetch_backup {
+        padding: 8px;
+        border-radius: 4px;
+        border: none;
+        background: var(--blue1);
+        color: white;
+        margin-bottom: 10px;
+        display: block;
+        text-align: center;
+        float: right;
+        font-size: 0.8rem;
+        cursor: pointer;
+      }
+
+      .row {
+        display: flex;
+        height: 100%;
+        justify-content: flex-start;
+        align-items: stretch;
+      }
+      .col {
+        padding: 0;
+        border-right: 1px solid #cccccc;
+        width: 25%;
+      }
+
+      .col-section {
+        border-bottom: 1px solid #cccccc;
+        padding: 15px;
+      }
+
+      .clearfloat::after {
+        display: block;
+        content: "";
+        width: 100%;
+        height: 1px;
+        overflow: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <h2 style="text-align: center;color: white;margin:0;">
+        Clipboard and Sticky Notes
+      </h2>
+    </header>
+    <div id="options_container">
+      <!-- <h2>Customize</h2> -->
+      <div class="row">
+        <div class="col">
+          <div class="col-section">
+            <label class="bg-picker-label" for="background-color-picker"
+              >Theme Color
+              <input
+                type="color"
+                id="background-color-picker"
+                class="color-picker"
+            /></label>
+            <br />
+            <label class="bg-picker-label" for="card-bg-color-picker"
+              >Card Background
+              <input
+                type="color"
+                id="card-bg-color-picker"
+                colorformat="rgba"
+                class="color-picker"
+            /></label>
+            <br />
+            <label class="bg-picker-label" for="text-color-picker"
+              >Text Color
+              <input type="color" id="text-color-picker" class="color-picker"
+            /></label>
+            <button
+              id="options_reset_btn"
+              style="margin-top: 20px;background:transparent;border-radius: 4px;padding:8px 12px;border-style: solid;cursor: pointer;"
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="clearfloat col-section">
+            <p class="clearfloat">
+              Download your notes for local backup. You can reupload it later.
+            </p>
+            <button id="download_notes">Download notes</button>
+          </div>
+
+          <div class="col-section clearfloat">
+            <p class="clearfloat">
+              Upload your notes from local backup, if you have downloaded
+              before.
+            </p>
+            <label for="upload_notes">Upload notes </label>
+
+            <input
+              type="file"
+              id="upload_notes"
+              style="opacity:0;width:0;height:0"
+            />
+          </div>
+          <div
+            class="col-section clearfloat backup-section"
+            style="display:none;"
+          >
+            <p class="clearfloat">Backup to google drive</p>
+            <p class="clearfloat" style="display:none;">
+              (Last Backup : <i id="last_backup_time"></i>)
+            </p>
+            <button id="backup" style="float:right">Backup to Drive</button>
+          </div>
+
+          <div>
+            <!--Add buttons to initiate auth sequence and sign out-->
+            <button id="authorize_button" style="display: none;">
+              Authorize
+            </button>
+            <button id="signout_button" style="display: none;">Sign Out</button>
+          </div>
+        </div>
+
+        <div class="col">
+          <div
+            class="col-section clearfloat backup-section"
+            style="display:none;"
+          >
+            <p class="clearfloat">Load from Backup in google drive</p>
+            <button id="fetch_backup" style="float:right">
+              Load from backup
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer
+      style="position:fixed;bottom:0;width:100%;background-color: #7f8c8d;left:0;height: 60px;
+text-align: center;
+"
+    >
+      <h3 class="" style="margin-top:10px">Clipboard by <i>Jaya Surya</i></h3>
+      <div>
+        Icons made by
+        <a href="https://www.flaticon.com/authors/iconixar" title="iconixar"
+          >iconixar</a
+        >
+        from
+        <a href="https://www.flaticon.com/" title="Flaticon"
+          >www.flaticon.com</a
+        >
+        is licensed by
+        <a
+          href="http://creativecommons.org/licenses/by/3.0/"
+          title="Creative Commons BY 3.0"
+          target="_blank"
+          >CC 3.0 BY</a
+        >
+      </div>
+    </footer>
+  </body>
+  <script src="invertColor.js"></script>
+  <script src="options.js"></script>
+
+  <!-- <script  src="../gapi.js" id="gapi"></script> -->
+  <script src="https://apis.google.com/js/client.js"></script>
+</html>
