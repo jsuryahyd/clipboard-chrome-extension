@@ -4,7 +4,7 @@ function Deploy() {
   let envVars = {};
   let tempFolderName = "./.build";
 
-  function deploy() {
+  function createZip() {
     createNewTempFolder();
   } //deploying
 
@@ -54,8 +54,8 @@ function Deploy() {
           newData,
           { encoding: "utf-8" },
           (err) => {
-            console.error(err, "fileWriteError");
-            zipTempFolder();
+           if(err) return console.error(err, "fileWriteError");
+            !isDev && zipTempFolder();
           }
         );
       });
@@ -89,9 +89,10 @@ function Deploy() {
     // zipTempFolder,
     // createNewTempFolder,
     // replaceManifestPlaceholders,
-		deploy,
+		 createZip,
 	createManifestForDevelopment
   };
 }
-const process = Deploy();
-process.deploy();
+const buildHelper = Deploy();
+// buildHelper.createZip();
+module.exports = buildHelper;
