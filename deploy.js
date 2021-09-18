@@ -64,7 +64,7 @@ function Deploy() {
 
   function zipTempFolder() {
     // const zipFileName = `sticky_notes-${new Date().toLocaleDateString().replace(/\//g,"-")}.zip`
-    const zipFileName = `sticky_notes-${envVars["version"] || ""}\(${new Date()
+    const zipFileName = `clipboard-${envVars["version"] || ""}\(${new Date()
       .toLocaleString()
       .replace(/\//g, "-")}\).zip`;
     exec(
