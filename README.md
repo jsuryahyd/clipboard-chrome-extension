@@ -6,3 +6,7 @@
 ### Build
 - to create zip file, run `node -e "require('./deploy.js').createZip()"`
 - upload zip to chrome dashboard
+
+
+## Todo:
+- quill js integration

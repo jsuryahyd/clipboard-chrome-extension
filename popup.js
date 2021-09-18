@@ -1,4 +1,5 @@
 /// <reference path="./chrome.d.ts"/>
+/// <reference path="./quill.min.js"/>
 // let port = chrome.tabs.connect(chrome.tabs[0]);
 
 // port.onMessage.addListener(msg => {});
@@ -33,7 +34,7 @@ function addCardOnClick() {
   console.log(content);
   content.focus();
   createCaretPlacer(true)(content);
-  getNotesAnd(notes => {
+  getNotesAnd((notes) => {
     notes.push(note);
     chrome.storage.sync.set({ notes });
   });
@@ -42,7 +43,7 @@ function addCardOnClick() {
 console.log("wth");
 // document.addEventListener("DOMContentLoaded", e => {
 // document.body.style.backgroundColor
-chrome.storage.sync.get(["color", "card-bg-color", "text-color"], data => {
+chrome.storage.sync.get(["color", "card-bg-color", "text-color"], (data) => {
   let color = data.color;
   console.log(data);
   // document.body.style.backgroundColor = color;
@@ -61,9 +62,8 @@ chrome.storage.sync.get(["color", "card-bg-color", "text-color"], data => {
     }
     //SET app title and ctrl+v to card color
     document.getElementsByClassName("app-title")[0].style.color = textColor;
-    document.getElementsByClassName(
-      "content_card--dummy"
-    )[0].style.color = textColor;
+    document.getElementsByClassName("content_card--dummy")[0].style.color =
+      textColor;
   }
 });
 let el = document.getElementsByClassName("content_card--dummy")[0];
@@ -79,9 +79,9 @@ optionsBtn.onclick = () => {
 // });
 
 //append previously pasted cards
-getNotesAnd(notes => {
-  notes = notes && Array.isArray(notes) ? notes.filter(n => !!n.text) : [];
-  notes.forEach(note => appendCard(note));
+getNotesAnd((notes) => {
+  notes = notes && Array.isArray(notes) ? notes.filter((n) => !!n.text) : [];
+  notes.forEach((note) => appendCard(note));
   chrome.storage.sync.set({ notes: notes }, () => {
     //success
   });
@@ -89,7 +89,7 @@ getNotesAnd(notes => {
   //remove empty notes
 });
 
-document.body.addEventListener("keydown", async e => {
+document.body.addEventListener("keydown", async (e) => {
   if (e.ctrlKey && e.key == "v") {
     // const text = await navigator.clipboard.readText().catch(err=>alert(err));
     // const text = window.clipboardData.getData('Text')
@@ -102,11 +102,11 @@ document.body.addEventListener("keydown", async e => {
 
     scrollToBottom(mainSection);
 
-    getNotesAnd(notes => {
+    getNotesAnd((notes) => {
       bkg.console.log(notes);
       chrome.storage.sync.set(
         {
-          notes: (Array.isArray(notes) ? notes : []).concat([{ text, noteId }])
+          notes: (Array.isArray(notes) ? notes : []).concat([{ text, noteId }]),
         },
         () => {
           //success | fail?
@@ -148,21 +148,28 @@ function appendCard({ text, noteId }, animation) {
   <button class="btn--no_style save-card-btn card__action-btn card__action--save" data-save-id="${noteId}" >Save</button>
   <button class="btn--no_style card__action-btn delete-card-btn" data-remove-id="${noteId}" >${deleteIcon()}</button>
   <button class="btn--no_style card__action-btn" data-copy-id="${noteId}" >${copyIcon}</button>
-  </div></div><div class="notes_input_wrapper"> <textarea placeholder="Enter Notes or Paste Text" class="note-content" rows=4 data-content-id="${noteId}">${text}</textarea></div>`; //.replace(/\n/g, "<br/>")
+  </div></div><div class="notes_input_wrapper editor-container"  id="editor--${noteId}"> 
+  <!--<textarea placeholder="Enter Notes or Paste Text" class="note-content" rows=4 data-content-id="${noteId}">${text}</textarea>-->
+  </div>`; //.replace(/\n/g, "<br/>")
   cards.appendChild(contentCard);
+
+  const editor = new Quill(document.getElementById("editor--" + noteId),{
+    placeholder:'Enter or paste your content'
+  });
+
   document.querySelector(`[data-remove-id="${noteId}"]`).onclick = () =>
     removeNote(noteId);
   let content = contentCard.getElementsByClassName("note-content")[0];
 
   let actionsDiv = contentCard.getElementsByClassName("card__actions")[0];
-  content.onfocus = e => {
+  content.onfocus = (e) => {
     focusedNoteId = noteId;
     // let actionBtns = contentCard.getElementsByClassName("card__action_btn");
     // [...actionBtns].forEach(a => {
     //   a.classList.add("d-none");
     // });
     //remove the save icon if any, from other cards or this card
-    [...document.getElementsByClassName("card__actions")].forEach(el =>
+    [...document.getElementsByClassName("card__actions")].forEach((el) =>
       el.classList.remove("edit-mode")
     );
     actionsDiv.classList.add("edit-mode");
@@ -175,7 +182,7 @@ function appendCard({ text, noteId }, animation) {
   let saveBtn = contentCard.getElementsByClassName("card__action--save")[0];
   // alert(!!saveBtn);
   saveBtn &&
-    (saveBtn.onclick = function() {
+    (saveBtn.onclick = function () {
       //use of 'this' so, no arrow function
       onEditComplete(content, noteId);
       this.innerText = "Saved";
@@ -190,7 +197,7 @@ function appendCard({ text, noteId }, animation) {
   // };
 
   let saveOnPause = null;
-  content.onkeyup = function(e) {
+  content.onkeyup = function (e) {
     if (e.keyCode >= 37 && e.keyCode <= 40) {
       return false;
     }
@@ -227,7 +234,7 @@ function appendCard({ text, noteId }, animation) {
 }
 
 function getNotesAnd(cb) {
-  chrome.storage.sync.get("notes", data => {
+  chrome.storage.sync.get("notes", (data) => {
     // bkg.console.log(data);
     cb(data.notes);
   });
@@ -238,21 +245,6 @@ function scrollToBottom(el) {
 }
 
 function selectText(node) {
-  // if (document.body.createTextRange) {
-  //   const range = document.body.createTextRange();
-  //   range.moveToElementText(node);
-  //   range.select();
-  //   document.execCommand("copy");
-  // } else if (window.getSelection) {
-  //   const selection = window.getSelection();
-  //   const range = document.createRange();
-  //   range.selectNodeContents(node);
-  //   selection.removeAllRanges();
-  //   selection.addRange(range);
-  //   document.execCommand("copy");
-  // } else {
-  //   // bkg.console.warn("Could not select text in node: Unsupported browser.");
-  // }
   node.select();
   document.execCommand("copy");
   let saveBtn = document.getElementById("save_card_btn");
@@ -281,13 +273,13 @@ PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8v
 
 function removeNote(noteId) {
   //getNotes
-  getNotesAnd(notes => {
+  getNotesAnd((notes) => {
     if (!notes || !Array.isArray(notes)) {
       //   bkg.console.log("removenote error", notes, noteId);
       return false;
     }
     //remove this note
-    notes = (notes || []).filter(n => n.noteId != noteId);
+    notes = (notes || []).filter((n) => n.noteId != noteId);
     //and set notes to storage
     chrome.storage.sync.set({ notes }, () => {
       //   bkg && bkg.console.log("updated notes after remove item:", noteId);
@@ -302,7 +294,7 @@ function onEditComplete(content, noteId, cb) {
   // bkg.console.log(content,noteId)
   focusedNoteId = null;
 
-  getNotesAnd(notes => {
+  getNotesAnd((notes) => {
     notes = notes.reduce((nts, n) => {
       if (n.noteId == noteId) {
         n.text = content.value; //content.innerHTML
@@ -331,7 +323,7 @@ function doubleDigits(d) {
 }
 
 function createCaretPlacer(atStart) {
-  return function(el) {
+  return function (el) {
     el.focus();
     if (
       typeof window.getSelection != "undefined" &&
