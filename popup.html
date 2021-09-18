@@ -95,15 +95,15 @@
 
       .card__title,
       .card__actions {
-        width: 70%;
+        width: 50%;
         display: inline-block;
         vertical-align: top;
         margin-bottom: 0;
       }
       .card__actions {
-        width: 30%;
+        width: 50%;
         display: inline-flex;
-        justify-content: space-evenly;
+        justify-content: flex-end;
       }
 
       .card__actions img {
@@ -173,6 +173,7 @@
       .card__action-btn {
         transition: transform 0.2s;
         cursor: pointer;
+        padding:2px 8px;
       }
 
       .card__header {
@@ -215,7 +216,6 @@
         animation: fadeIn 0.2s;
       }
       .card__action-btn.card__action--save {
-        display: none;
         animation: fadeOut 0.2s;
         font-size: 12px;
         padding: 4px;
@@ -226,14 +226,22 @@
         line-height: 20px;
         padding: 0 5px;
         border-radius: 2px;
-        margin-left: auto;
       }
       .card__action-btn.card__action--save:hover {
         transform: none;
       }
-      .edit-mode .card__action-btn {
-        display: initial;
+
+      .save-card-btn{
+        display:none;
+      }
+      .edit-mode .save-card-btn{
+        display:initial;
         animation: fadeOut 0.2s;
+      }
+      /* .edit-card-btn{
+        display:none
+      } */
+      .edit-mode .edit-card-btn {
         display: none;
       }
       .edit-mode .card__action-btn.card__action--save {

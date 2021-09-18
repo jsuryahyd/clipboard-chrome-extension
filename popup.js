@@ -143,11 +143,11 @@ function appendCard({ text, noteId }, animation) {
   //   let dateString = date.toString();
   let dateString = formatDate(date);
   contentCard.innerHTML = `<div class="card__header"><h4 class="card__title">${dateString}</h4><div class="card__actions">
-  <button class="btn--no_style card__action-btn" data-edit-id="${noteId}" >${editIcon} 
-  </button>
+  <!--<button class="btn--no_style edit-card-btn card__action-btn" data-edit-id="${noteId}" >${editIcon} 
+  </button>-->
+  <button class="btn--no_style save-card-btn card__action-btn card__action--save" data-save-id="${noteId}" >Save</button>
   <button class="btn--no_style card__action-btn delete-card-btn" data-remove-id="${noteId}" >${deleteIcon()}</button>
   <button class="btn--no_style card__action-btn" data-copy-id="${noteId}" >${copyIcon}</button>
-  <button class="btn--no_style card__action-btn card__action--save" data-save-id="${noteId}" >Save</button>
   </div></div><div class="notes_input_wrapper"> <textarea placeholder="Enter Notes or Paste Text" class="note-content" rows=4 data-content-id="${noteId}">${text}</textarea></div>`; //.replace(/\n/g, "<br/>")
   cards.appendChild(contentCard);
   document.querySelector(`[data-remove-id="${noteId}"]`).onclick = () =>
@@ -200,7 +200,7 @@ function appendCard({ text, noteId }, animation) {
         saveBtn.innerText = "Auto Saved";
         setTimeout(() => {
           saveBtn.innerText = "Save";
-          actionsDiv.classList.remove("edit-mode")
+          // actionsDiv.classList.remove("edit-mode")
         }, 700);
       });
     }, 1500);
@@ -209,14 +209,14 @@ function appendCard({ text, noteId }, animation) {
     // this.parentElement.height = "auto"
   };
   content.addEventListener("paste", pasteAsPlainText);
-  document.querySelector(`[data-edit-id="${noteId}"]`).onclick = () => {
-    // content.focus();
-    createCaretPlacer(false)(content);
-  };
+  // document.querySelector(`[data-edit-id="${noteId}"]`).onclick = () => {
+  //   // content.focus();
+  //   createCaretPlacer(false)(content);
+  // };
 
   document.querySelector(`[data-copy-id="${noteId}"]`).onclick = () => {
     selectText(content);
-    actionsDiv.classList.remove("edit-mode");
+    // actionsDiv.classList.remove("edit-mode");
   };
   if (animation) contentCard.style.animation = "glow 1s linear 0s 1";
 

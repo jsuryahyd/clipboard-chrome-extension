@@ -1,26 +1,24 @@
-chrome.runtime.onInstalled.addListener(function() {
-  onInstalled();
+///<reference path="./chrome.d.ts" />
+chrome.runtime.onInstalled.addListener(function (...args) {
+  onInstalled(...args);
   onPageChanged();
 });
 
-// chrome.runtime.onConnect.addListener(port => {
-//     port.onDisconnect.addListener((e)=>{
-
-//     })
-// });
-
-function onInstalled() {
-  chrome.storage.sync.set(
-    {
-      color: "#606060",
-      "card-bg-color": "#606060",
-      "text-color": "#ffffff",
-      notes: []
-    },
-    function() {
-      console.log("installed.");
-    }
-  );
+function onInstalled({reason}) {
+  console.log(reason)
+  if (reason === "install") {
+    chrome.storage.sync.set(
+      {
+        color: "#606060",
+        "card-bg-color": "#606060",
+        "text-color": "#fdffff",//https://stackoverflow.com/a/47471487/7314900
+        notes: [],
+      },
+      function () {
+        console.log("installed.");
+      }
+    );
+  }
 }
 
 function onPageChanged() {
@@ -41,16 +39,16 @@ function onPageChanged() {
   //   });
 }
 
-chrome.browserAction.onClicked.addListener(tab => {
+chrome.browserAction.onClicked.addListener((tab) => {
   // chrome.tabs.executeScript({
   //   file: "appIframe.js"
   // });
   // chrome.tabs.executeScript({
   //   code:"console.log('executeScript')"
   // })
-  chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
     // console.log(tabs)
-    chrome.tabs.sendMessage(tabs[0].id, { openApp: true }, function(response) {
+    chrome.tabs.sendMessage(tabs[0].id, { openApp: true }, function (response) {
       console.log("open app response :", response);
     });
   });
@@ -84,7 +82,7 @@ chrome.browserAction.onClicked.addListener(tab => {
     },
 */
 
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.type == "popupInit") console.log("popup");
   console.log("message");
   console.log(

@@ -1,9 +1,10 @@
 ///<reference path="../chrome.d.ts"/>
 ///<reference path="../gapi.d.ts"/>
-console.log = (...args) => {
-  return;
-  // console.info("some thing logging " + args.length + " items");
-};
+///<reference path="./invertColor.js"/>
+// console.log = (...args) => {
+//   return;
+//   // console.info("some thing logging " + args.length + " items");
+// };
 
 document.addEventListener("DOMContentLoaded", onPageLoad);
 function onPageLoad() {
@@ -18,15 +19,21 @@ function onPageLoad() {
   let backupSections = document.getElementsByClassName("backup-section");
   const lastBackupTime = document.getElementById("last_backup_time");
   const fetchBackupBtn = document.getElementById("fetch_backup");
-  chrome.storage.sync.get(["color", "card-bg-color", "text-color"], data => {
+  chrome.storage.sync.get(["color", "card-bg-color", "text-color"], (data) => {
     console.log(data);
     bgColorPicker.value = data.color;
     bgColorPicker.parentElement.style.backgroundColor = data.color;
     bgColorPicker.parentElement.style.color = invertColor(data.color, true);
-    bgColorPicker.onchange = e => saveValues("color", e);
+    bgColorPicker.onblur = (e) => {
+      console.log(e.type);
+      saveValues("color", e);
+    };
     cardBgColorPicker.value = data["card-bg-color"];
-    cardBgColorPicker.onchange = e => saveValues("card-bg-color", e);
-    console.log(cardBgColorPicker.parentElement);
+    cardBgColorPicker.onblur = function (e) {
+      console.log(e.type);
+      saveValues("card-bg-color", e);
+    };
+    // console.log(cardBgColorPicker.parentElement);
     cardBgColorPicker.parentElement.style.backgroundColor =
       data["card-bg-color"];
     cardBgColorPicker.parentElement.style.color = invertColor(
@@ -34,7 +41,10 @@ function onPageLoad() {
       true
     );
     textColorPicker.value = data["text-color"];
-    textColorPicker.onchange = e => saveValues("text-color", e);
+    textColorPicker.addEventListener("blur", (e) => {
+      console.log(e.type);
+      saveValues("text-color", e);
+    });
     textColorPicker.parentElement.style.backgroundColor = data["text-color"];
     textColorPicker.parentElement.style.color = invertColor(
       data["text-color"],
@@ -57,7 +67,7 @@ function onPageLoad() {
 
   downloadNotes.onclick = downloadContent;
 
-  uploadNotesInput.onchange = function() {
+  uploadNotesInput.onchange = function () {
     uploadNotes(this);
   };
 
@@ -66,13 +76,13 @@ function onPageLoad() {
       backupSections[0].style.display = "block";
       backupSections[1].style.display = "block";
       backupBtn.onclick = () => {
-        chrome.identity.getAuthToken({ interactive: true }, function(token) {
-          chrome.storage.sync.get("notes", data => {
+        chrome.identity.getAuthToken({ interactive: true }, function (token) {
+          chrome.storage.sync.get("notes", (data) => {
             driveBackup(data, token);
           });
         });
       };
-      chrome.storage.sync.get("last_backup", data => {
+      chrome.storage.sync.get("last_backup", (data) => {
         let lastBackedupTime = (data.last_backup || {}).time || "";
         if (lastBackedupTime) {
           lastBackupTime.parentElement.style.display = "block";
@@ -83,7 +93,7 @@ function onPageLoad() {
       });
 
       fetchBackupBtn.onclick = () => {
-        chrome.identity.getAuthToken({ interactive: true }, function(token) {
+        chrome.identity.getAuthToken({ interactive: true }, function (token) {
           fetchBackup(token);
         });
       };
@@ -92,6 +102,7 @@ function onPageLoad() {
 }
 
 function saveValues(name, event) {
+  event.stopPropagation();
   let value = event.target.value;
   chrome.storage.sync.set({ [name]: value }, () => {
     // console.log('done')
@@ -105,7 +116,7 @@ function reset({ bgColorPicker, cardBgColorPicker, textColorPicker }) {
     {
       color: "#606060",
       "card-bg-color": "#606060",
-      "text-color": "#ffffff"
+      "text-color": "#fdffff",
     },
     () => {
       //console.log('reset finished')
@@ -114,11 +125,11 @@ function reset({ bgColorPicker, cardBgColorPicker, textColorPicker }) {
 
   bgColorPicker.value = "#606060";
   cardBgColorPicker.value = "#606060";
-  textColorPicker.value = "#ffffff";
+  textColorPicker.value = "#fdffff";
 }
 
 function downloadContent() {
-  chrome.storage.sync.get("notes", data => {
+  chrome.storage.sync.get("notes", (data) => {
     // bkg.console.log(data);
     downloadObjectAsJson(
       data.notes,
@@ -146,18 +157,18 @@ function uploadNotes(input) {
   const file = input.files[0];
   if (!file) return alert("No file");
   const reader = new FileReader();
-  reader.onload = ev => {
+  reader.onload = (ev) => {
     console.log(ev.target.result);
 
     let content = ev.target.result;
-    chrome.storage.sync.get("notes", data => {
+    chrome.storage.sync.get("notes", (data) => {
       chrome.storage.sync.set({
-        notes: [...data.notes, ...JSON.parse(content + "")]
+        notes: [...data.notes, ...JSON.parse(content + "")],
       });
     });
   };
 
-  reader.onerror = ev => {
+  reader.onerror = (ev) => {
     console.error(ev);
     alert("Error while reading the file.");
   };
@@ -167,7 +178,7 @@ function uploadNotes(input) {
 function driveBackup(data, token) {
   var fileMetadata = {
     name: "data.json",
-    parents: ["appDataFolder"]
+    parents: ["appDataFolder"],
   };
 
   const formData = new FormData();
@@ -185,7 +196,7 @@ function driveBackup(data, token) {
     //   [new Blob([JSON.stringify(data)], { type: "application/json" })],
     //   "data.json"
     // )
-    body: data
+    body: data,
     // "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data))
   };
 
@@ -199,14 +210,14 @@ function driveBackup(data, token) {
       else {
         return alert("An error occured while saving backup to drive");
       }
-      chrome.storage.sync.get("last_backup", data => {
+      chrome.storage.sync.get("last_backup", (data) => {
         let oldBackupId = (data.last_backup || {}).id;
         //delete old backup file
         console.log("deleting old backup with id :", oldBackupId);
         deleteFromDrive(oldBackupId, token);
       });
       chrome.storage.sync.set({
-        last_backup: { id: args[0].id, time: new Date().getTime() }
+        last_backup: { id: args[0].id, time: new Date().getTime() },
       });
     }
   );
@@ -216,7 +227,7 @@ function driveBackup(data, token) {
 }
 
 function fetchBackup(token) {
-  chrome.storage.sync.get("last_backup", data => {
+  chrome.storage.sync.get("last_backup", (data) => {
     console.log(data);
     if (!data.last_backup || !data.last_backup.id) {
       return false;
@@ -226,24 +237,24 @@ function fetchBackup(token) {
       fileId: data.last_backup.id,
       oauth_token: token,
       // fields: 'webContentLink'
-      alt: "media" //==> this will get file content, without this only metadata is returned
+      alt: "media", //==> this will get file content, without this only metadata is returned
     });
     filesReq.execute(
       (...args) => {
         console.log(args);
         const backupNotes = args[0].result.notes;
-        chrome.storage.sync.get("notes", data => {
+        chrome.storage.sync.get("notes", (data) => {
           chrome.storage.sync.set(
             {
               notes: [
                 ...data.notes,
-                ...backupNotes.filter(n => {
+                ...backupNotes.filter((n) => {
                   //donot include notes with existing ids(backup might include some local cached notes too.)
-                  return !data.notes.find(dn => dn.noteId == n.noteId);
-                })
+                  return !data.notes.find((dn) => dn.noteId == n.noteId);
+                }),
               ].sort((a, b) => {
                 return a.noteId > b.noteId ? 1 : -1;
-              })
+              }),
             },
             (...args) => {
               console.log(args);
@@ -267,7 +278,7 @@ function fetchBackup(token) {
  * @param {*} token
  * @param {*} callback
  */
-var createFileWithJSONContent = function(name, data, token, callback) {
+var createFileWithJSONContent = function (name, data, token, callback) {
   const boundary = "-------314159265358979323846";
   const delimiter = "\r\n--" + boundary + "\r\n";
   const close_delim = "\r\n--" + boundary + "--";
@@ -276,7 +287,7 @@ var createFileWithJSONContent = function(name, data, token, callback) {
 
   var metadata = {
     name: name,
-    mimeType: contentType
+    mimeType: contentType,
   };
 
   var multipartRequestBody =
@@ -296,12 +307,12 @@ var createFileWithJSONContent = function(name, data, token, callback) {
     params: { uploadType: "multipart" },
     headers: {
       "Content-Type": 'multipart/related; boundary="' + boundary + '"',
-      authorization: "Bearer " + token
+      authorization: "Bearer " + token,
     },
-    body: multipartRequestBody
+    body: multipartRequestBody,
   });
   if (!callback) {
-    callback = function(file) {
+    callback = function (file) {
       console.log(file);
     };
   }
@@ -311,9 +322,9 @@ var createFileWithJSONContent = function(name, data, token, callback) {
 function deleteFromDrive(fileId, token) {
   var request = gapi.client.drive.files.delete({
     fileId: fileId,
-    oauth_token: token
+    oauth_token: token,
   });
-  request.execute(function(resp) {
+  request.execute(function (resp) {
     console.log(resp);
   });
 }
@@ -327,14 +338,14 @@ function createWithDriveApi(metadata, token) {
   const createRequest = gapi.client.drive.files.create({
     resource: metadata,
     fields: "id",
-    oauth_token: token
+    oauth_token: token,
   });
 
   createRequest.execute((...args) => {
     console.log(args);
 
     chrome.storage.sync.set({
-      last_backup: { id: args[0].id, time: new Date().getTime() }
+      last_backup: { id: args[0].id, time: new Date().getTime() },
     });
   });
 }
@@ -360,19 +371,19 @@ function createWithRestApi(data, token) {
       //   encodeURIComponent(JSON.stringify(data)),
       headers: {
         "content-type": "application/json",
-        authorization: "Bearer " + token
-      }
+        authorization: "Bearer " + token,
+      },
     }
   )
-    .then(response => {
+    .then((response) => {
       if (response.ok) return response;
       else
         throw Error(
           `Server returned ${response.status}: ${response.statusText}`
         );
     })
-    .then(response => console.log(response.text()))
-    .catch(err => {
+    .then((response) => console.log(response.text()))
+    .catch((err) => {
       console.error(err);
     });
 }
